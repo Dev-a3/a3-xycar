@@ -248,7 +248,8 @@ def start():
     global cap
     global Width, Height
     global m_
-    global l_,r_,kg
+    global l_,r_
+    kg = 0
 
     rospy.init_node('auto_drive')
     pub = rospy.Publisher('xycar_motor', xycar_motor, queue_size=1)
@@ -269,33 +270,35 @@ def start():
 
 
         if kg == 1:
-            center = (lpos + rpos) / 2
-            #angle = -(Width/2 - center)
-            error = (center - Width/2)
+            # center = (lpos + rpos) / 2
+            # #angle = -(Width/2 - center)
+            # error = (center - Width/2)
 
             drive(angle*float(0.80),speed)
             if l_ == 1 and r_ == 1:
+                pid.d_error = 0.0
+                pid.p_error = 0.0
+                pid.p_error = 0.0
                 kg = 0
 
-        if l_ == 0 and r_ == 0:
-            center = (lpos + rpos) / 2
-            #angle = -(Width/2 - center)
-            error = (center - Width/2)
-
-            drive(angle*float(0.80),speed)
-            kg = 1
-
         else:
+            if l_ == 0 and r_ == 0:
+                # center = (lpos + rpos) / 2
+                # #angle = -(Width/2 - center)
+                # error = (center - Width/2)
 
-            center = (lpos + rpos) / 2
-            #angle = -(Width/2 - center)
-            error = (center - Width/2)
+                drive(angle*float(0.80),speed)
+                kg = 1
+
+            else:
+
+                center = (lpos + rpos) / 2
+                #angle = -(Width/2 - center)
+                error = (center - Width/2)
 
 
-            angle = pid.pid_control(error)
-            drive(angle*float(0.80),speed)
-            l_ = 1
-            r_ = 1
+                angle = pid.pid_control(error)
+                drive(angle*float(0.80),speed)
 
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
