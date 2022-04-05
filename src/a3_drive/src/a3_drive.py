@@ -250,6 +250,7 @@ def start():
     global m_
     global l_,r_
     kg = 0
+    count = 0
 
     rospy.init_node('auto_drive')
     pub = rospy.Publisher('xycar_motor', xycar_motor, queue_size=1)
@@ -273,7 +274,11 @@ def start():
             # center = (lpos + rpos) / 2
             # #angle = -(Width/2 - center)
             # error = (center - Width/2)
-
+            count += 2
+            if count > 60:
+                kg = 0
+                count = 0
+                print("count reset")
             drive(angle*float(0.80),speed)
             if l_ == 1 and r_ == 1:
                 pid.d_error = 0.0
